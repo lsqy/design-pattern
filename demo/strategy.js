@@ -17,7 +17,7 @@
         calculateBonus('B', 20000);
         calculateBonus('S', 6000);*/
 
-        // 改善版本1
+        /************************************************************************************************************/
         /*var performanceS = function(salary) {
             return salary * 4;
         }
@@ -42,7 +42,10 @@
 
         calculateBonus('A', 6000);*/
 
-        // 使用策略模式重构
+        /************************************************************************************************************/
+
+        /*// 使用策略模式重构
+        // 策略类
         var performanceS = function() {
 
         };
@@ -65,6 +68,99 @@
         performanceB.prototype.calculate = function(salary) {
             return salary * 2;
         }
+
+        // 奖金类
+        var Bonus = function() {
+            this.salary = null; //原始工资
+            this.strategy = null; //绩效等级对应的策略对象
+        }
+
+        Bonus.prototype.setSalary = function(salary) {
+            this.salary = salary; //设置员工的原始工资
+        }
+
+        Bonus.prototype.setStrategy = function(strategy) {
+            this.strategy = strategy; //设置员工绩效等级对应的策略对象
+        }
+
+        Bonus.prototype.getBonus = function() { //取得奖金数额
+            return this.strategy.calculate(this.salary); //把计算奖金的操作委托给对应的策略
+        }
+
+        var bonus = new Bonus();
+
+        bonus.setSalary(10000);
+        bonus.setStrategy(new performanceS()); //设置策略对象
+
+        console.log(bonus.getBonus()); //输出:40000
+
+        bonus.setStrategy(new performanceA()); //设置策略对象
+
+        console.log(bonus.getBonus()); //输出:30000*/
+
+
+        /***************************例子二简单动画效果实现***************************/
+        var tween = {
+            linear: function(t, b, c, d) {
+                return c * t / d + b;
+            },
+            easeIn: function(t, b, c, d) {
+                return c * (t /= d) * t + b;
+            },
+            strongEaseIn: function(t, b, c, d) {
+                return c * (t /= d) * t * t * t * t + b;
+            }
+        };
+
+        var Animate = function(dom) {
+            this.dom = dom;
+            this.startTime = 0;
+            this.startPos = 0;
+            this.endPos = 0;
+            this.propertyName = null;
+            this.easing = null;
+            this.duration = null;
+        };
+
+        Animate.prototype.start = function(propertyName, endPos, duration, easing) {
+            this.startTime = +new Date();
+            this.startPos = this.dom.getBoundingClientRect()[propertyName];
+            this.propertyName = propertyName;
+            this.endPos = endPos;
+            this.duration = duration;
+            this.easing = tween[easing];
+
+            var self = this;
+            var timeId = setInterval(function() {
+                if (self.step() === false) {
+                    clearInterval(timeId);
+                }
+            }, 19);
+        }
+
+        Animate.prototype.step = function() {
+            var t = +new Date();
+            if (t > this.startTime + this.duration) {
+                this.update(this.endPos);
+                return false;
+            }
+            var pos = this.easing(t - this.startTime, this.startPos, this.endPos - this.startPos, this.duration);
+            this.update(pos);
+        }
+
+        Animate.prototype.update = function(pos) {
+            this.dom.style[this.propertyName] = pos + 'px';
+        }
+
+        var div = document.getElementById('box');
+
+        var animate = new Animate(div);
+
+        animate.start('left', 500, 3000, 'strongEaseIn');
+
+
+
+
 
 
 
